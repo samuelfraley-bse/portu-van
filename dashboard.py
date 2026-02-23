@@ -166,7 +166,7 @@ with tab1:
                 icon=folium.Icon(color=c["folium"], prefix='fa', icon='circle')
             ).add_to(m_overview)
 
-    st_folium(m_overview, width="100%", height=480)
+    st_folium(m_overview, width="100%", height=480, key="map_overview")
 
     cols = st.columns(3)
     for i, cat in enumerate(categories):
@@ -177,7 +177,7 @@ with tab1:
                 gmaps_url = f"https://www.google.com/maps/search/?api=1&query={row['lat']},{row['lon']}"
                 if GOOGLE_API_KEY and pd.notna(row.get('photo_reference')) and row['photo_reference']:
                     photo_url = f"https://places.googleapis.com/v1/{row['photo_reference']}/media?key={GOOGLE_API_KEY}&maxHeightPx=400&maxWidthPx=400"
-                    st.image(photo_url, use_container_width=True)
+                    st.image(photo_url, width='stretch')
                 st.markdown(f"""[**{row['name']}**]({gmaps_url})
 {row['rating']} &nbsp;·&nbsp; {int(row['user_ratings_total'])} reviews
 Wild score: {int(row['amenity_score'])}
@@ -192,7 +192,7 @@ with tab2:
         st.subheader("Plan a Route")
         with st.expander("Trip Settings", expanded=True):
             preference = st.radio("Style", ["Balanced", "Wild & Nature", "Popular & Social"])
-            if st.button("Generate Route", type="primary", use_container_width=True):
+            if st.button("Generate Route", type="primary", width='stretch'):
                 st.session_state['trip'] = generate_random_trip(df, preference)
 
     with col2:
@@ -272,7 +272,7 @@ with tab2:
                     popup=row['name']
                 ).add_to(m)
 
-        st_folium(m, width="100%", height=580)
+        st_folium(m, width="100%", height=580, key="map_trip")
 
     if 'trip' in st.session_state:
         trip = st.session_state['trip']
@@ -288,7 +288,7 @@ with tab2:
                 "rating": st.column_config.NumberColumn("Rating", format="%.1f"),
                 "drive_time": "Drive Time",
             },
-            use_container_width=True,
+            width='stretch',
             hide_index=True
         )
 
@@ -299,7 +299,7 @@ with tab2:
                 if 'photo_reference' in stop and pd.notna(stop.get('photo_reference')) and stop['photo_reference']:
                     photo_url = f"https://places.googleapis.com/v1/{stop['photo_reference']}/media?key={GOOGLE_API_KEY}&maxHeightPx=400&maxWidthPx=400"
                     with gallery_cols[i % 4]:
-                        st.image(photo_url, caption=stop['name'], use_container_width=True)
+                        st.image(photo_url, caption=stop['name'], width='stretch')
 
 # ── Tab 3: Territory ──────────────────────────────────────────────────────────
 with tab3:
@@ -375,7 +375,7 @@ with tab3:
             fg.add_to(t_map)
 
         folium.LayerControl(collapsed=False).add_to(t_map)
-        st_folium(t_map, width="100%", height=580)
+        st_folium(t_map, width="100%", height=580, key="map_territory")
 
     # Region breakdown
     st.markdown("---")
@@ -399,4 +399,4 @@ with tab3:
     region_order = ["Algarve", "Alentejo", "Centro Sul", "Centro Norte", "Norte"]
     region_stats = region_stats.reindex([r for r in region_order if r in region_stats.index])
 
-    st.dataframe(region_stats, use_container_width=True)
+    st.dataframe(region_stats, width='stretch')
